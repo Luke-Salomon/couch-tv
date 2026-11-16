@@ -71,6 +71,8 @@
       }
     });
     if (SKY_PORT) shown.unshift({ package: SKY, label: S.hdmi_label || "Sky" });
+    // "hdmi_only": every app lives on the box (an Apple TV), so the home lists just its tile.
+    if (SKY_PORT && S.hdmi_only) shown = shown.slice(0, 1);
   }
   var SKY = "local.sky", SKY_PORT = parseInt(S.sky_hdmi, 10) || 0, skyOn = false;
   sortOut();
@@ -125,11 +127,14 @@
   }
 
   function openSky() {
-    function failed(step, e) { skyOn = false; skyNote("Sky did not open (" + step + "). " + errText(e)); }
+    function failed(step, e) { skyOn = false; skyNote((S.hdmi_label || "Sky") + " did not open (" + step + "). " + errText(e)); }
     try {
       tizen.systeminfo.getPropertyValue("VIDEOSOURCE", function (info) {
         var list = (info && info.connected) || [], src = null;
-        list.forEach(function (s) { if (s.type === "HDMI" && s.number === SKY_PORT) src = s; });
+        // A box in standby (an Apple TV asleep) reads as disconnected; pick it anyway, it shows once it wakes.
+        list.concat((info && info.disconnected) || []).forEach(function (s) {
+          if (!src && s.type === "HDMI" && s.number === SKY_PORT) src = s;
+        });
         if (!src) {
           failed("HDMI " + SKY_PORT + " not connected", "The TV lists: " +
             (list.map(function (s) { return s.type + " " + s.number; }).join(", ") || "nothing"));
