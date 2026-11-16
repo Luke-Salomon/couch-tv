@@ -70,7 +70,7 @@
         shown.push({ package: a.id, label: a.name });
       }
     });
-    if (SKY_PORT) shown.unshift({ package: SKY, label: "Sky" });
+    if (SKY_PORT) shown.unshift({ package: SKY, label: S.hdmi_label || "Sky" });
   }
   var SKY = "local.sky", SKY_PORT = parseInt(S.sky_hdmi, 10) || 0, skyOn = false;
   sortOut();
@@ -185,7 +185,7 @@
   }
 
   function iconUrl(pkg) {
-    if (pkg === SKY) return "logo-sky.png";
+    if (pkg === SKY) return S.hdmi_logo || "logo-sky.png";
     var m = MAP[pkg];
     if (m && m.logo) return "logos/" + pkg + ".png";
     var a = byPkg[pkg];

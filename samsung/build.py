@@ -95,7 +95,9 @@ def main():
     if sky is not None and (not isinstance(sky, int) or isinstance(sky, bool) or not 1 <= sky <= 4):
         raise SystemExit(f"{tv_cfg['id']}: sky_hdmi must be a port number from 1 to 4, or left out")
     key = a.key or config.PAIRING_KEY
-    settings = {"bridge": a.bridge.rstrip("/"), "tv": a.tv, "log": a.log_url.rstrip("/"), "sky_hdmi": sky, "key": key}
+    settings = {"bridge": a.bridge.rstrip("/"), "tv": a.tv, "log": a.log_url.rstrip("/"), "sky_hdmi": sky, "key": key,
+                # ponytail: the HDMI tile is the Sky tile renamed; any box on that port (an Apple TV, say)
+                "hdmi_label": tv_cfg.get("hdmi_label") or "Sky", "hdmi_logo": tv_cfg.get("hdmi_logo") or "logo-sky.png"}
     with open(os.path.join(stage, "settings.js"), "w") as f:
         f.write("window.COUCH_TIZEN = " + json.dumps(settings) + ";\n")
     table = {}
